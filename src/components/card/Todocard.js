@@ -18,7 +18,11 @@ const Todocard = () => {
       </div>
       <div className="flex space-x-2">
         <EditTodo />
-        <Button color={"red"} icon={<MdDelete />} onClick={isDelete} />
+        <Button
+          color={`bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800`}
+          icon={<MdDelete />}
+          onClick={isDelete}
+        />
       </div>
     </div>
   );

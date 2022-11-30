@@ -33,7 +33,7 @@ const EditTodo = () => {
   return (
     <>
       <Button
-        color={"sky"}
+        color={`bg-sky-600 hover:bg-sky-700 focus:bg-sky-700 active:bg-sky-800`}
         icon={loading ? <LoadingBar /> : <FiEdit />}
         data-bs-toggle="modal"
         data-bs-target="#exampleModalCenter"
