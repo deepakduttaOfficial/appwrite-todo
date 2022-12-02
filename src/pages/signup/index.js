@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { ID } from "appwrite";
+import { account } from "../../appwrite/appwrite";
 import Loadingbutton from "../../components/button/button";
 import Input from "../../components/input";
+import { ToastContainer, toast } from "react-toastify";
+import { isAuthenticate } from "../auth";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  isAuthenticate() && navigate("/");
+
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -23,16 +30,43 @@ const Signup = () => {
     });
   };
 
-  const isSignup = (e) => {
+  const isSignup = async (e) => {
     e.preventDefault();
     setValues({ ...values, success: false, loading: true, error: false });
-    setTimeout(() => {
-      setValues({ ...values, success: false, loading: false, error: false });
-    }, 2000);
-    console.log(values);
+    const promise = account.create(ID.unique(), email, password, name);
+
+    promise.then(
+      function (response) {
+        console.log(response);
+        toast.success(`Account created successfully`, {
+          theme: "dark",
+          autoClose: 2000,
+        });
+        setValues({
+          name: "",
+          email: "",
+          password: "",
+          success: { response },
+          loading: false,
+          error: false,
+        });
+      },
+      function (error) {
+        toast.error(`${error}`, { theme: "dark", autoClose: 2000 });
+        setValues({
+          ...values,
+          success: false,
+          loading: false,
+          error: { error },
+        });
+        console.log(error);
+      }
+    );
   };
+
   return (
-    <div className="bg-transparent min-h-screen flex flex-col  ">
+    <div className="bg-transparent min-h-screen flex flex-col">
+      <ToastContainer />
       <div className="container max-w-md mx-auto flex-1 flex flex-col items-center justify-center px-2 ">
         <div className="px-6 py-8 rounded shadow-md w-full border border-gray-300">
           <h1 className="mb-8 text-3xl text-center text-slate-700">Sign up</h1>

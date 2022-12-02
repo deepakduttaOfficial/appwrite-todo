@@ -1,7 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../images/logo.png";
+import { isAuthenticate, logout } from "../../pages/auth";
 
-const Navbar = ({ isAuthenticate }) => {
+const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <nav
       className="
@@ -36,7 +38,7 @@ const Navbar = ({ isAuthenticate }) => {
           </a>
         </div>
         <div className="flex items-center relative">
-          {isAuthenticate ? (
+          {isAuthenticate() ? (
             <div className="dropdown relative">
               <button
                 className="dropdown-toggle flex items-center hidden-arrow"
@@ -57,12 +59,16 @@ const Navbar = ({ isAuthenticate }) => {
                 aria-labelledby="dropdownMenuButton2"
               >
                 <li>
-                  <a
+                  <button
                     className="dropdown-item text-sm py-2 px-4 block text-center whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100 w-28 font-semibold"
-                    href="/"
+                    onClick={() => {
+                      logout(() => {
+                        navigate("/signin");
+                      });
+                    }}
                   >
                     Log out
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

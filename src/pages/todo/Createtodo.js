@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Loadingbutton from "../../components/button/button";
+import { databases } from "../../appwrite/appwrite";
+import { ID } from "appwrite";
+import { toast, ToastContainer } from "react-toastify";
+import { Todocontext } from "../../context/Todocontext";
 
 const Createtodo = () => {
+  const { REACT_APP_DATABASE_ID, REACT_APP_COLLECTION_ID } = process.env;
+  const { refTodo, setRefTodo } = useContext(Todocontext);
   const [values, setValues] = useState({
     todo: "",
     success: false,
@@ -23,13 +29,42 @@ const Createtodo = () => {
   const addTodo = (e) => {
     e.preventDefault();
     setValues({ ...values, success: false, loading: true, error: false });
-    setTimeout(() => {
-      setValues({ ...values, success: false, loading: false, error: false });
-    }, 2000);
-    console.log(values);
+    const promise = databases.createDocument(
+      REACT_APP_DATABASE_ID,
+      REACT_APP_COLLECTION_ID,
+      ID.unique(),
+      { todo }
+    );
+
+    promise.then(
+      function (response) {
+        toast.success(`Todo created successfully`, {
+          theme: "dark",
+          autoClose: 2000,
+        });
+        setValues({
+          todo: "",
+          success: { response },
+          loading: false,
+          error: false,
+        });
+        setRefTodo(!refTodo);
+      },
+      function (error) {
+        toast.error(`${error}`, { theme: "dark", autoClose: 2000 });
+        setValues({
+          ...values,
+          success: false,
+          loading: false,
+          error: { error },
+        });
+        console.log(error);
+      }
+    );
   };
   return (
     <>
+      <ToastContainer />
       <div className="flex justify-center">
         <div className="w-full">
           <div className="input-group relative flex flex-wrap items-stretch w-full mb-4">
